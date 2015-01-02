@@ -190,10 +190,10 @@ var at = function (textarea, contact, jsonurl, allLeft, allTop, textareaWidth) {
         }
     }
 
-    if(addEventListener){
+    if(textarea.addEventListener){
         textarea.addEventListener("keyup",objChange,false);
         textarea.addEventListener("mouseup",objChange,false);
-    }else if(attachEvent){
+    }else if(textarea.attachEvent){
         textarea.attachEvent("onkeyup",objChange);
         textarea.attachEvent("onmouseup",objChange);
     }
