@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>getBoundingClientRect()</title>
+	<style type="text/css">
+	*{margin:0;padding:0;}
+	body{height:1000px;}
+	#input{width:600px;height:200px;position:relative;margin:50px auto;}
+	#div{width:600px;height:200px;position:absolute;font-size:14px;z-index:9999;opacity:0;}
+	#textarea{width:600px;height:200px;position:absolute;font-size:14px;z-index:10000;resize:none;}
+	#info{width:200px;height:200px;position:absolute;left:0;top:0;background:red;z-index:10001;opacity:0.5;display:none;}
+	</style>
+</head>
+<body>
+	<div id="input">
+		<textarea id="textarea"></textarea>
+		<div id="div" contenteditable="true"></div>
+	</div>
+	<div id="info"></div>
+
+	<script type="text/javascript" src="at1.1.js"></script>
+
+	<script type="text/javascript">
+	window.onload = function () {
+        at(getById("textarea"));
+	}
+	</script>
+</body>
+</html>
