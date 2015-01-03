@@ -15,26 +15,6 @@ function getById (obj) {
     return document.getElementById(obj);
 }
 
-//封装Ajax
-function ajax (url, fnSucc, fnFaild){
-    if(window.XMLHttpRequest){
-        var oAjax=new XMLHttpRequest();
-    } else{
-        var oAjax=new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    oAjax.open('GET', url, true);
-    oAjax.send();
-    oAjax.onreadystatechange=function (){
-        if(oAjax.readyState==4){
-            if(oAjax.status==200){
-                fnSucc(oAjax.responseText);
-            } else{
-                fnFaild(oAjax.status);
-            }
-        }
-    };
-}
-
 // 统计光标之前的字符串
 function posCursor (obj){
     var isIE = !(!document.all);
@@ -95,56 +75,48 @@ function objChange (textarea, hiddenObj, atList, rest){
 
     if (beforeCursorString.indexOf('@')!=-1&&indexString.indexOf(' ')==-1&&indexString.indexOf('\n')==-1) {
         //@开始
-        function ajaxSucc (data) {
-            var list = JSON.parse(data);
-            var dom = '<li class="list-title">选择最近@的人或直接输入</li>';
-            for (var i = 0,len = list.length; i < len; i++) {
-                dom += '<li class="list-content">'+ list[i]+'</li>';
-            };
-            atList.innerHTML = dom;
+        var list = ["选择昵称1","某某2某某某某","某某33某某","某444某某某","某某某55某某某","某6某某","某某某某7某某","某某88某某某","某某99某某999"];
+        var dom = '<li class="list-title">选择最近@的人或直接输入</li>';
+        for (var i = 0,len = list.length; i < len; i++) {
+            dom += '<li class="list-content">'+ list[i]+'</li>';
+        };
+        atList.innerHTML = dom;
 
-            var listClick = atList.getElementsByTagName("li");
-            for (var i = 1,len = listClick.length; i < len; i++) {
-                listClick[i].onmouseover = (function(i) {
-                    return function() {
-                        for (var l = 1; l < len; l++) {
-                            listClick[l].className = 'list-content';
-                        };
-                        listClick[i].className = 'list-content list-active';
+        var listClick = atList.getElementsByTagName("li");
+        for (var i = 1,len = listClick.length; i < len; i++) {
+            listClick[i].onmouseover = (function(i) {
+                return function() {
+                    for (var l = 1; l < len; l++) {
+                        listClick[l].className = 'list-content';
+                    };
+                    listClick[i].className = 'list-content list-active';
+                }
+            })(i);
+
+            listClick[i].onclick = (function(i) {
+                return function() {
+                    //将textarea分成三块，@之前的area1、@+联系人+' '的area2、光标之后的area3
+                    var area1 = objString.substr(0,atLocation);
+                    var area2 = '@' + listClick[i].innerHTML + ' ';
+                    var area3 = objString.substr(cursorPosition,getLength(objString) - cursorPosition);
+
+                    textarea.value = area1+area2+area3;
+                    atList.style.display = 'none';
+
+                    //定位光标
+                    var position = area1.length + area2.length;
+                    if (navigator.appName=="Microsoft Internet Explorer") {
+                        var range = textarea.createTextRange();
+                        range.move("character", position);
+                        range.select();
                     }
-                })(i);
-
-                listClick[i].onclick = (function(i) {
-                    return function() {
-                        //将textarea分成三块，@之前的area1、@+联系人+' '的area2、光标之后的area3
-                        var area1 = objString.substr(0,atLocation);
-                        var area2 = '@' + listClick[i].innerHTML + ' ';
-                        var area3 = objString.substr(cursorPosition,getLength(objString) - cursorPosition);
-
-                        textarea.value = area1+area2+area3;
-                        atList.style.display = 'none';
-
-                        //定位光标
-                        var position = area1.length + area2.length;
-                        if (navigator.appName=="Microsoft Internet Explorer") {
-                            var range = textarea.createTextRange();
-                            range.move("character", position);
-                            range.select();
-                        }
-                        else {
-                            textarea.setSelectionRange(position, position);
-                            textarea.focus();
-                        }
+                    else {
+                        textarea.setSelectionRange(position, position);
+                        textarea.focus();
                     }
-                })(i);
-            };
-        }
-
-        function ajaxFaild (data) {
-            console.log(data);
-        }
-
-        ajax ("contact.json", ajaxSucc, ajaxFaild);
+                }
+            })(i);
+        };
 
         atList.style.display = 'block';
 		hiddenObj.innerHTML = positionString.replace(/\n/g,"<br/>") + '<span id="at">@</span>';
@@ -152,7 +124,7 @@ function objChange (textarea, hiddenObj, atList, rest){
 		atList.style.left = getXY(at).left + 2 + 'px';
 		atList.style.top = getXY(at).top + 18 + 'px';
         //打印出@之后的字符串
-        console.log(indexString);
+        // console.log(indexString);
     } else{
         atList.style.display = 'none';
     }
