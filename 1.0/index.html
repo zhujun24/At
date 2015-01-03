@@ -1,0 +1,42 @@
+<!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>新浪微博发布输入框1.0</title>
+        <link href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            #form{position:relative;overflow:visible;}
+            #contact{position:absolute;top:0px;left:0px;display:none;}
+            #contact li{text-align:center;cursor:pointer;}
+            #contact li.active{cursor:auto;}
+            .li-hover{background-color:#eee;}
+        </style>
+    </head>
+    <body>
+    
+    <div class="container">
+        <div class="col-sm-8 col-sm-offset-2">
+            <h1><small>简单实现新浪微博@功能的插件 <a target="_blank" href="https://github.com/zhujun24/At">Github</a>
+    <a target="_blank" href="/at/">改进版</a></small></h1>
+        </div>
+        <form id="form" class="form-horizontal col-sm-8 col-sm-offset-2" role="form">
+            <br/>
+            <textarea class="form-control" id="textarea" placeholder="Review" rows="6"></textarea>
+            <ul id="contact" class="list-group">
+            </ul>
+            <br/>
+        </form>
+    </div>
+
+    <script src="at-1.0.js"></script>
+    <script>
+        var textarea = document.getElementById("textarea"); //textarea
+        var contact = document.getElementById("contact"); //列表ul
+        var jsonurl = 'contact.json'; //列表json的url
+        var allLeft = 30; //修正列表位置，由于margin padding border产生的误差
+        var allTop = 30; //修正列表位置，由于margin padding border产生的误差
+        var textareaWith = 700; //用于自动换行
+        at(textarea, contact, jsonurl, allLeft, allTop, textareaWith);
+    </script>
+    </body>
+    </html>
