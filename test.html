@@ -2,28 +2,99 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>getBoundingClientRect()</title>
+	<title>新浪微博发布输入框</title>
 	<style type="text/css">
 	*{margin:0;padding:0;}
 	body{height:1000px;}
-	#input{width:600px;height:200px;position:relative;margin:50px auto;}
-	#div{width:600px;height:200px;position:absolute;font-size:14px;z-index:9999;opacity:0;}
-	#textarea{width:600px;height:200px;position:absolute;font-size:14px;z-index:10000;resize:none;}
-	#info{width:200px;height:200px;position:absolute;left:0;top:0;background:red;z-index:10001;opacity:0.5;display:none;}
+	#input{
+		width: 610px;
+		height: 130px;
+		position: absolute;
+		left: 50%;
+		top: 50px;
+		margin-left: -300px;
+	}
+	.same{
+		display: inline-block;
+		position:absolute;
+		overflow-x: hidden;
+		overflow-y: auto;
+		outline: none;
+		resize:none;
+		white-space: pre-wrap;
+		cursor: auto;
+		color: rgb(128, 128, 128);
+		width: 600px;
+		height: 100px;
+		top: 20px;
+		padding: 4px;
+		border-radius: 4px;
+		font-size: 14px;
+		line-height: 18px;
+		border: 1px solid #fa7d3c;
+		font-family: Arial, 'Microsoft YaHei';
+	}
+	#div{
+		z-index:9999;
+		visibility: hidden;
+	}
+	#textarea{
+		z-index:10000;
+	}
+	#info{
+		position: absolute;
+		background: #fff;
+		color: #333;
+		border: 1px solid #ccc;
+		border-radius: 2px;
+		padding: 2px;
+		box-shadow: 0px 2px 8px 1px rgba(0,0,0,0.2);
+		z-index:10001;
+		display:none;
+	}
+	#info .list-content, #info .list-title{
+		font-family: Arial, 'Microsoft YaHei';
+		font-size: 12px;
+		padding: 6px 10px;
+		cursor: pointer;
+		list-style: none;
+	}
+	#info .list-content.list-active{
+		color: #eb7350;
+		background-color: #f2f2f5;
+	}
+	#rest{
+		font-family: Arial, 'Microsoft YaHei';
+		height: 20px;
+		font-size: 14px;
+		line-height: 20px;
+		position: absolute;
+		right: 0;
+	}
+	#rest span{
+		color: #eb7350;
+		font-size: 18px;
+		line-height: 20px;
+		font-weight: bold;
+	}
 	</style>
 </head>
 <body>
 	<div id="input">
-		<textarea id="textarea"></textarea>
-		<div id="div" contenteditable="true"></div>
+		<p id="rest">还可以输入<span>140</span>字</p>
+		<textarea class="same" id="textarea"></textarea>
+		<div class="same" id="div" contenteditable="true"></div>
 	</div>
 	<div id="info"></div>
-
 	<script type="text/javascript" src="at1.1.js"></script>
-
 	<script type="text/javascript">
 	window.onload = function () {
-        at(getById("textarea"));
+		//at1.1.js中定义了getById()函数
+		var textarea = getById("textarea");
+		var hiddenObj = getById("div");
+		var atList = getById("info");
+		var rest = getById("rest");
+        at (textarea, hiddenObj, atList, rest);
 	}
 	</script>
 </body>

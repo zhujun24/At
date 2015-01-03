@@ -1,4 +1,4 @@
-//返回@位置
+//返回obj位置
 function getXY(obj) {
 	var rect = obj.getBoundingClientRect(),
 	scrollTop = Math.max(obj.ownerDocument.documentElement.scrollTop,obj.ownerDocument.body.scrollTop),
@@ -10,8 +10,29 @@ function getXY(obj) {
 	return position;
 }
 
+//你懂的
 function getById (obj) {
-	return document.getElementById(obj);
+    return document.getElementById(obj);
+}
+
+//封装Ajax
+function ajax (url, fnSucc, fnFaild){
+    if(window.XMLHttpRequest){
+        var oAjax=new XMLHttpRequest();
+    } else{
+        var oAjax=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    oAjax.open('GET', url, true);
+    oAjax.send();
+    oAjax.onreadystatechange=function (){
+        if(oAjax.readyState==4){
+            if(oAjax.status==200){
+                fnSucc(oAjax.responseText);
+            } else{
+                fnFaild(oAjax.status);
+            }
+        }
+    };
 }
 
 // 统计光标之前的字符串
@@ -49,20 +70,18 @@ function getLength (obj){
     return realLength;
 }
 
-// 统计字符串出现的次数
-function tongJi (string, char){
-    var index = 0 , index1 = 0 , count = 0;
-    for(var i = 0; i < string.length && ( index1 != -1 ); i++ ){
-        index1 = string.indexOf(char, index);
-        index = index1 + 1;
-        count = i;
-    }
-    return count;
-}
-
-function objChange (textarea){
+function objChange (textarea, hiddenObj, atList, rest){
     //取值
     var objString =  textarea.value;
+
+    //统计输入字符数，汉字1，数字字母0.5
+    var stringNum = Math.ceil(getLength(objString)/2);
+    if (stringNum <= 140) {
+        rest.innerHTML = '还可以输入<span>'+(140-stringNum)+'</span>字';
+    } else {
+        rest.innerHTML = '已超出<span>'+(stringNum-140)+'</span>字';
+    }
+
     //记录光标当前位置
     var cursorPosition = posCursor(textarea);
     //光标之前的字符串
@@ -76,21 +95,75 @@ function objChange (textarea){
 
     if (beforeCursorString.indexOf('@')!=-1&&indexString.indexOf(' ')==-1&&indexString.indexOf('\n')==-1) {
         //@开始
-        getById("info").style.display = 'block';
-		getById("div").innerHTML = positionString.replace(/\n/g,"<br/>") + '<span id="at">@</span>';
-		getById("info").style.left = getXY(getById("at")).left + 2 + 'px';
-		getById("info").style.top = getXY(getById("at")).top + 18 + 'px';
+        function ajaxSucc (data) {
+            var list = JSON.parse(data);
+            var dom = '<li class="list-title">选择最近@的人或直接输入</li>';
+            for (var i = 0,len = list.length; i < len; i++) {
+                dom += '<li class="list-content">'+ list[i]+'</li>';
+            };
+            atList.innerHTML = dom;
+
+            var listClick = atList.getElementsByTagName("li");
+            for (var i = 1,len = listClick.length; i < len; i++) {
+                listClick[i].onmouseover = (function(i) {
+                    return function() {
+                        for (var l = 1; l < len; l++) {
+                            listClick[l].className = 'list-content';
+                        };
+                        listClick[i].className = 'list-content list-active';
+                    }
+                })(i);
+
+                listClick[i].onclick = (function(i) {
+                    return function() {
+                        //将textarea分成三块，@之前的area1、@+联系人+' '的area2、光标之后的area3
+                        var area1 = objString.substr(0,atLocation);
+                        var area2 = '@' + listClick[i].innerHTML + ' ';
+                        var area3 = objString.substr(cursorPosition,getLength(objString) - cursorPosition);
+
+                        textarea.value = area1+area2+area3;
+                        atList.style.display = 'none';
+
+                        //定位光标
+                        var position = area1.length + area2.length;
+                        if (navigator.appName=="Microsoft Internet Explorer") {
+                            var range = textarea.createTextRange();
+                            range.move("character", position);
+                            range.select();
+                        }
+                        else {
+                            textarea.setSelectionRange(position, position);
+                            textarea.focus();
+                        }
+                    }
+                })(i);
+            };
+        }
+
+        function ajaxFaild (data) {
+            console.log(data);
+        }
+
+        ajax ("contact.json", ajaxSucc, ajaxFaild);
+
+        atList.style.display = 'block';
+		hiddenObj.innerHTML = positionString.replace(/\n/g,"<br/>") + '<span id="at">@</span>';
+        var at = getById("at");
+		atList.style.left = getXY(at).left + 2 + 'px';
+		atList.style.top = getXY(at).top + 18 + 'px';
+        //打印出@之后的字符串
+        console.log(indexString);
     } else{
-        getById("info").style.display = 'none';
+        atList.style.display = 'none';
     }
 }
 
-function at (obj) {
-	if(obj.addEventListener){
-        obj.addEventListener("keyup",function(){objChange(obj)},false);
-        obj.addEventListener("mouseup",function(){objChange(obj)},false);
-    }else if(obj.attachEvent){
-        obj.attachEvent("onkeyup",function(){objChange(obj)});
-        obj.attachEvent("onmouseup",function(){objChange(obj)});
+function at (textarea, hiddenObj, atList, rest) {
+	if(textarea.addEventListener){
+        textarea.addEventListener("keyup",function(){objChange(textarea, hiddenObj, atList, rest)},false);
+        textarea.addEventListener("mouseup",function(){objChange(textarea, hiddenObj, atList, rest)},false);
+    }else if(textarea.attachEvent){
+        textarea.attachEvent("onkeyup",function(){objChange(textarea, hiddenObj, atList, rest)});
+        textarea.attachEvent("onmouseup",function(){objChange(textarea, hiddenObj, atList, rest)});
     }
 }
