@@ -1,8 +1,8 @@
 //返回obj位置
 function getXY(obj) {
 	var rect = obj.getBoundingClientRect(),
-	scrollTop = Math.max(obj.ownerDocument.documentElement.scrollTop,obj.ownerDocument.body.scrollTop),
-	scrollLeft = Math.max(obj.ownerDocument.documentElement.scrollLeft,obj.ownerDocument.body.scrollLeft),
+	scrollTop = document.body.scrollTop || document.documentElement.scrollTop,
+	scrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft,
 	isIE = window.ActiveXObject ? 2 : 0;
 	var position ={};
 	position.left = rect.left - isIE + scrollLeft;
