@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>新浪微博发布输入框1.1</title>
+	<title>新浪微博输入框</title>
 	<style type="text/css">
 	*{margin:0;padding:0;}
 	#input{width: 610px;height: 130px;position: absolute;left: 50%;top: 50px;margin-left: -300px;}
@@ -22,17 +22,17 @@
 <div id="input">
     <div id="link">
         <a target="_blank" href="https://github.com/zhujun24/At">Github</a>
-        <a target="_blank" href="/at/1.0/">以前的版本</a>
+        <a target="_blank" href="/1.0">以前的版本</a>
     </div>
     <p id="rest">还可以输入<span>140</span>字</p>
-    <textarea class="same" id="textarea"></textarea>
+    <textarea class="same" id="textarea" placeholder="说点什么吧……"></textarea>
 
     <div class="same" id="div" contenteditable="true"></div>
 </div>
 <ul id="info"></ul>
 <input id="cursor" type="hidden"/>
 
-<script type="text/javascript" src="at-1.1.js"></script>
+<script type="text/javascript" src="at.js"></script>
 <script type="text/javascript">
     window.onload = function () {
         //at1.1.js中定义了getById()函数
