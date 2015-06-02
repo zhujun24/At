@@ -55,10 +55,7 @@ function getLength(obj) {
 
 //class操作
 function hasClass(ele, cls) {
-    if (ele.className.indexOf(cls) != -1) {
-        return true;
-    }
-    return false;
+    return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
 }
 function addClass(ele, cls) {
     if (!this.hasClass(ele, cls)) {
@@ -72,72 +69,46 @@ function removeClass(ele, cls) {
     }
 }
 
+//根据class获取当前激活的li的索引
+function getLiIndex(arr, cls) {
+    for (var i = 1; i < arr.length; i++) {
+        if (hasClass(arr[i], cls)) {
+            return i;
+        }
+    }
+    return false;
+}
+
+//定位光标位置
+function cursorHandle(obj, pos) {
+    if (navigator.appName == "Microsoft Internet Explorer") {
+        var range = obj.createTextRange();
+        range.move("character", pos);
+        range.select();
+    } else {
+        obj.setSelectionRange(pos, pos);
+        obj.focus();
+    }
+}
+
+//处理选中之后的字符串
+function handleString(index, textarea, listClick, atList, objString, atLocation, cursorPosition) {
+    //将textarea分成三块，@之前的area1、@+联系人+' '的area2、光标之后的area3
+    var area1 = objString.substr(0, atLocation);
+    var area2 = '@' + listClick[index].innerHTML + ' ';
+    var area3 = objString.substr(cursorPosition, getLength(objString) - cursorPosition);
+
+    textarea.value = area1 + area2 + area3;
+    atList.style.display = 'none';
+
+    //定位光标
+    var position = area1.length + area2.length;
+    cursorHandle(textarea, position);
+}
+
 function objChange(textarea, hiddenObj, atList, rest, event) {
-    var key = event.keyCode;
-    var listClick = atList.getElementsByTagName("li");
-    var len = listClick.length;
-
-    //根据class获取当前激活的li的索引
-    function getLiIndex() {
-        for (var i = 1; i < len; i++) {
-            if (listClick[i].className.indexOf("list-active") != -1) {
-                return i;
-            }
-        }
-        return false;
-    }
-
-    if (key == 40) {
-        var next = getLiIndex() == len - 1 ? 0 : getLiIndex();
-        for (var l = 1; l < len; l++) {
-            removeClass(listClick[l], "list-active");
-        }
-        addClass(listClick[next + 1], "list-active");
-        return false;
-    } else if (key == 38) {
-        var prev = getLiIndex() == 1 ? len : getLiIndex();
-        for (var i = 1; i < len; i++) {
-            removeClass(listClick[i], "list-active");
-        }
-        addClass(listClick[prev - 1], "list-active");
-        return false;
-    }else if(key == 13){
-        handleString(getLiIndex());
-        return false;
-    }
-    //处理选中之后的字符串
-    function handleString(i) {
-        //将textarea分成三块，@之前的area1、@+联系人+' '的area2、光标之后的area3
-        var area1 = objString.substr(0, atLocation);
-        var area2 = '@' + listClick[i].innerHTML + ' ';
-        var area3 = objString.substr(cursorPosition, getLength(objString) - cursorPosition);
-
-        textarea.value = area1 + area2 + area3;
-        atList.style.display = 'none';
-
-        //定位光标
-        var position = area1.length + area2.length;
-        if (navigator.appName == "Microsoft Internet Explorer") {
-            var range = textarea.createTextRange();
-            range.move("character", position);
-            range.select();
-        } else {
-            textarea.setSelectionRange(position, position);
-            textarea.focus();
-        }
-    }
-
     //取值
     var objString = textarea.value;
-
-    //统计输入字符数，汉字1，数字字母0.5
-    var stringNum = Math.ceil(getLength(objString) / 2);
-    if (stringNum <= 140) {
-        rest.innerHTML = '还可以输入<span>' + (140 - stringNum) + '</span>字';
-    } else {
-        rest.innerHTML = '已超出<span>' + (stringNum - 140) + '</span>字';
-    }
-
     //记录光标当前位置
     var cursorPosition = posCursor(textarea);
     //光标之前的字符串
@@ -149,8 +120,37 @@ function objChange(textarea, hiddenObj, atList, rest, event) {
     //记录从开始到光标前最近的@之间的字符串，用来定位
     var positionString = objString.substr(0, atLocation);
 
+    if (atList.style.display == "block") {
+        var key = event.keyCode;
+        var listClick = atList.getElementsByTagName("li");
+        var len = listClick.length;
+
+        if (key == 40) {
+            cursorHandle(textarea, getById("cursor").value);
+            var next = getLiIndex(listClick, "list-active") == len - 1 ? 0 : getLiIndex(listClick, "list-active");
+            for (var i = 1; i < len; i++) {
+                removeClass(listClick[i], "list-active");
+            }
+            addClass(listClick[next + 1], "list-active");
+            return false;
+        } else if (key == 38) {
+            cursorHandle(textarea, getById("cursor").value);
+            var prev = getLiIndex(listClick, "list-active") == 1 ? len : getLiIndex(listClick, "list-active");
+            for (var i = 1; i < len; i++) {
+                removeClass(listClick[i], "list-active");
+            }
+            addClass(listClick[prev - 1], "list-active");
+            return false;
+        } else if (key == 13) {
+            handleString(getLiIndex(listClick, "list-active"), textarea, listClick, atList, objString, atLocation, cursorPosition);
+            return false;
+        }
+    }
+
     if (beforeCursorString.indexOf('@') != -1 && indexString.indexOf(' ') == -1 && indexString.indexOf('\n') == -1) {
         //@开始
+
+        getById("cursor").value = posCursor(textarea);
         var list = ["选择昵称1", "某某2某某某某", "某某33某某", "某444某某某", "某某某55某某某", "某6某某", "某某某某7某某", "某某88某某某", "某某99某某999"];
         var dom = '<li class="list-title">选择最近@的人或直接输入</li>';
         for (var i = 0, len = list.length; i < len; i++) {
@@ -164,15 +164,15 @@ function objChange(textarea, hiddenObj, atList, rest, event) {
             listClick[i].onmouseover = (function (i) {
                 return function () {
                     for (var l = 1; l < len; l++) {
-                        listClick[l].className = 'list-content';
+                        removeClass(listClick[l], "list-active");
                     }
-                    listClick[i].className = 'list-content list-active';
+                    addClass(listClick[i], "list-active");
                 }
             })(i);
 
             listClick[i].onclick = (function (i) {
                 return function () {
-                    handleString(i);
+                    handleString(i, textarea, listClick, atList, objString, atLocation, cursorPosition);
                 }
             })(i);
         }
@@ -185,6 +185,15 @@ function objChange(textarea, hiddenObj, atList, rest, event) {
     } else {
         atList.style.display = 'none';
     }
+
+
+    //统计输入字符数，汉字1，数字字母0.5
+    var stringNum = Math.ceil(getLength(objString) / 2);
+    if (stringNum <= 140) {
+        rest.innerHTML = '还可以输入<span>' + (140 - stringNum) + '</span>字';
+    } else {
+        rest.innerHTML = '已超出<span>' + (stringNum - 140) + '</span>字';
+    }
 }
 
 function at(textarea, hiddenObj, atList, rest) {
@@ -192,17 +201,11 @@ function at(textarea, hiddenObj, atList, rest) {
         textarea.addEventListener("keyup", function (event) {
             objChange(textarea, hiddenObj, atList, rest, event)
         }, false);
-        textarea.addEventListener("keydown", function (event) {
-            objChange(textarea, hiddenObj, atList, rest, event)
-        }, false);
         textarea.addEventListener("mouseup", function (event) {
             objChange(textarea, hiddenObj, atList, rest, event)
         }, false);
     } else if (textarea.attachEvent) {
         textarea.attachEvent("onkeyup", function (event) {
-            objChange(textarea, hiddenObj, atList, rest, event)
-        });
-        textarea.attachEvent("onkeydown", function (event) {
             objChange(textarea, hiddenObj, atList, rest, event)
         });
         textarea.attachEvent("onmouseup", function (event) {

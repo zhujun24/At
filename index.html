@@ -19,27 +19,29 @@
 	</style>
 </head>
 <body>
-	<div id="input">
-		<div id="link">
-			<a target="_blank" href="https://github.com/zhujun24/At">Github</a>
-			<a target="_blank" href="/at/1.0/">以前的版本</a>
-		</div>
-		<p id="rest">还可以输入<span>140</span>字</p>
-		<textarea class="same" id="textarea"></textarea>
-		<div class="same" id="div" contenteditable="true"></div>
-	</div>
-	<ul id="info"></ul>
-	
-	<script type="text/javascript" src="at-1.1.js"></script>
-	<script type="text/javascript">
-	window.onload = function () {
-		//at1.1.js中定义了getById()函数
-		var textarea = getById("textarea");
-		var hiddenObj = getById("div");
-		var atList = getById("info");
-		var rest = getById("rest");
-        at (textarea, hiddenObj, atList, rest);
-	}
-	</script>
+<div id="input">
+    <div id="link">
+        <a target="_blank" href="https://github.com/zhujun24/At">Github</a>
+        <a target="_blank" href="/at/1.0/">以前的版本</a>
+    </div>
+    <p id="rest">还可以输入<span>140</span>字</p>
+    <textarea class="same" id="textarea"></textarea>
+
+    <div class="same" id="div" contenteditable="true"></div>
+</div>
+<ul id="info"></ul>
+<input id="cursor" type="hidden"/>
+
+<script type="text/javascript" src="at-1.1.js"></script>
+<script type="text/javascript">
+    window.onload = function () {
+        //at1.1.js中定义了getById()函数
+        var textarea = getById("textarea");
+        var hiddenObj = getById("div");
+        var atList = getById("info");
+        var rest = getById("rest");
+        at(textarea, hiddenObj, atList, rest);
+    }
+</script>
 </body>
 </html>
