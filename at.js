@@ -3,7 +3,7 @@ function getXY(obj) {
     var rect = obj.getBoundingClientRect(),
         scrollTop = document.body.scrollTop || document.documentElement.scrollTop,
         scrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft,
-        isIE = window.ActiveXObject ? 2 : 0;
+        isIE = !(!document.all) ? 2 : 0;
     var position = {};
     position.left = rect.left - isIE + scrollLeft;
     position.top = rect.top - isIE + scrollTop;
@@ -149,10 +149,11 @@ function objChange(textarea, hiddenObj, atList, rest, event) {
 
     if (beforeCursorString.indexOf('@') != -1 && indexString.indexOf(' ') == -1 && indexString.indexOf('\n') == -1) {
         //@开始
+        console.log(indexString);
 
         getById("cursor").value = posCursor(textarea);
-        var list = ["选择昵称1", "某某2某某某某", "某某33某某", "某444某某某", "某某某55某某某", "某6某某", "某某某某7某某", "某某88某某某", "某某99某某999"];
-        var dom = '<li class="list-title">选择最近@的人或直接输入</li>';
+        var list = ["选择昵称6666666", "某某2某某某某", "某某33某某", "某444某某某", "某某某55某某某", "某6某某", "某某某某7某某", "某某88某某某", "某某99某某999"];
+        var dom = indexString.length > 1 ? '<li class="list-title">选择最近@的人或直接输入</li>' : '<li class="list-title">选择昵称或轻敲空格完成输入</li>';
         for (var i = 0, len = list.length; i < len; i++) {
             dom += '<li class="list-content">' + list[i] + '</li>';
         }
