@@ -99,6 +99,7 @@ function handleString(index, textarea, listClick, atList, objString, atLocation,
     var area3 = objString.substr(cursorPosition, getLength(objString) - cursorPosition);
 
     textarea.value = area1 + area2 + area3;
+    atList.innerHTML = '';
     atList.style.display = 'none';
 
     //定位光标
@@ -184,6 +185,7 @@ function objChange(textarea, hiddenObj, atList, rest, event) {
         atList.style.left = getXY(at).left + 2 + 'px';
         atList.style.top = getXY(at).top + 18 + 'px';
     } else {
+        atList.innerHTML = '';
         atList.style.display = 'none';
     }
 
