@@ -150,8 +150,6 @@ function objChange(textarea, hiddenObj, atList, rest, event) {
 
     if (beforeCursorString.indexOf('@') != -1 && indexString.indexOf(' ') == -1 && indexString.indexOf('\n') == -1) {
         //@开始
-        console.log(indexString);
-
         getById("cursor").value = posCursor(textarea);
         var list = ["选择昵称6666666", "某某2某某某某", "某某33某某", "某444某某某", "某某某55某某某", "某6某某", "某某某某7某某", "某某88某某某", "某某99某某999"];
         var dom = indexString.length > 1 ? '<li class="list-title">选择最近@的人或直接输入</li>' : '<li class="list-title">选择昵称或轻敲空格完成输入</li>';
@@ -183,7 +181,7 @@ function objChange(textarea, hiddenObj, atList, rest, event) {
         hiddenObj.innerHTML = positionString.replace(/\n/g, "<br/>") + '<span id="at">@</span>';
         var at = getById("at");
         atList.style.left = getXY(at).left + 2 + 'px';
-        atList.style.top = getXY(at).top + 18 + 'px';
+        atList.style.top = getXY(at).top - textarea.scrollTop + 18 + 'px';
     } else {
         atList.innerHTML = '';
         atList.style.display = 'none';
