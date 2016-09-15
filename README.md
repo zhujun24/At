@@ -1,1 +1,3 @@
-## 新浪微博发布输入框，用getBoundingClientRect()来获取'@'的位置
+## 新浪微博发布输入框
+
+使用 `getBoundingClientRect` 来获取 `@` 的位置
